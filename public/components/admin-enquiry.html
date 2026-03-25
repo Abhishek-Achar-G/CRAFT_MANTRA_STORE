@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Enquiry Management - CraftMantra</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#f4f6f9;
+padding:20px;
+}
+
+/* HEADER */
+
+.header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+position:relative;
+margin-bottom:20px;
+}
+
+/* TITLE CENTER */
+
+.header h2{
+position:absolute;
+left:50%;
+transform:translateX(-50%);
+color:#2e7d32;
+margin:0;
+}
+
+
+/* Right LOGO */
+
+.logo{
+height:60px;
+}
+
+/* BACK BUTTON */
+
+.back-btn{
+background:#2e7d32;
+color:white;
+padding:6px 12px;
+font-size:13px;
+border-radius:5px;
+text-decoration:none;
+
+display:inline-flex;
+align-items:center;
+gap:6px;
+}
+
+.back-btn:hover{
+background:#1b5e20;
+}
+
+/* SECTIONS */
+
+.section{
+background:white;
+padding:20px;
+margin-bottom:30px;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,0.1)
+}
+
+.table-container{
+overflow-x:auto;
+}
+
+/* TABLE */
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+min-width:1000px;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:8px;
+text-align:center;
+font-size:13px
+}
+
+th{
+background:#2c3e50;
+color:white
+}
+
+/* BUTTONS */
+
+.filter-btn{
+background:#2e7d32;
+color:white;
+padding:7px 14px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+font-size:13px;
+}
+
+.filter-btn:hover{
+background:#1b5e20;
+}
+
+button{
+padding:6px 10px;
+border:none;
+border-radius:5px;
+color:white;
+cursor:pointer;
+font-size:12px;
+}
+
+.accept{background:#27ae60}
+.reject{background:#e74c3c}
+.send{background:#2980b9}
+.sent{background:#27ae60}
+
+/* IMAGE */
+
+img{
+width:50px;
+border-radius:5px
+}
+
+/* STATUS */
+
+.status-pending{color:orange;font-weight:bold}
+.status-accepted{color:green;font-weight:bold}
+.status-rejected{color:red;font-weight:bold}
+
+/* INPUT */
+
+input,select{
+padding:6px;
+margin:5px;
+}
+
+.title-area{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+}
+
+.logo{
+height:60px;
+}
+
+.header h2{
+color:#2e7d32;
+margin:0;
+}
+
+.download-btn{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+width:24px;
+height:24px;
+background:#1976d2;
+color:white;
+border-radius:50%;
+text-decoration:none;
+font-size:12px;
+}
+
+.download-btn:hover{
+background:#0d47a1;
+}
+
+.confirm-sent{
+color:green;
+font-weight:bold;
+}
+
+.confirm-pending{
+color:orange;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+
+<a href="javascript:history.back()" class="back-btn">
+<span class="arrow">←</span>
+<span>Back</span>
+</a>
+
+<div class="title-area">
+<img src="/images/logo.png" class="logo">
+<h2>Enquiry Management - CraftMantra</h2>
+</div>
+
+</div>
+
+<!-- ================= VIEW ALL ================= -->
+
+<div class="section">
+
+<h3>View All Enquiries</h3>
+
+<div style="margin-bottom:10px;">
+
+<select id="sortEnquiry">
+<option value="">Sort Enquiry No</option>
+<option value="enq_asc">Ascending</option>
+<option value="enq_desc">Descending</option>
+</select>
+
+<select id="sortDeadline">
+<option value="">Sort Deadline</option>
+<option value="dead_asc">Ascending</option>
+<option value="dead_desc">Descending</option>
+</select>
+
+<select id="statusFilter">
+<option value="">All Status</option>
+<option value="Pending">Pending</option>
+<option value="Accepted">Accepted</option>
+<option value="Rejected">Rejected</option>
+</select>
+
+<button class="filter-btn" onclick="applyViewFilters()">Apply Filter</button>
+<select id="columnFilter">
+<option value="">Filter By Column</option>
+<option value="organisation">Organisation</option>
+<option value="product">Product</option>
+<option value="user">User</option>
+<option value="deadline">Deadline</option>
+</select>
+
+</div>
+
+<div class="table-container">
+
+<table>
+
+<thead>
+<tr>
+<th>Enquiry No</th>
+<th>User Code</th>
+<th>User Name</th>
+<th>Organisation</th>
+<th>Email</th>
+<th>Alt Email</th>
+<th>Phone</th>
+<th>Product</th>
+<th>Product Code</th>
+<th>Qty</th>
+<th>Price</th>
+<th>Deadline</th>
+<th>Customize</th>
+<th>Image</th>
+<th>Status</th>
+<th>Documents</th>
+</tr>
+</thead>
+
+<tbody id="allEnquiries"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<!-- ================= ENQUIRY ACTION ================= -->
+
+<div class="section">
+
+<h3>Enquiry Action</h3>
+
+<select id="filterType">
+<option value="enquiry_no">Sort by Enquiry No</option>
+<option value="deadline">Sort by Deadline</option>
+</select>
+
+<input type="text" id="searchBox" placeholder="Search Enquiry No / Name / Org / Email / Deadline">
+
+<div class="table-container">
+
+<table>
+
+<thead>
+<tr>
+<th>Enquiry No</th>
+<th>Email</th>
+<th>Alt Email</th>
+<th>Product Code</th>
+<th>Product</th>
+<th>Deadline</th>
+<th>Customize</th>
+<th>Qty</th>
+<th>Image</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="actionEnquiries"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<!-- ================= ACCEPTED ================= -->
+
+<div class="section">
+
+<h3>Accepted Enquiries</h3>
+
+<div class="table-container">
+
+<table>
+
+<thead>
+<tr>
+<th>Enquiry No</th>
+<th>User</th>
+<th>Email</th>
+<th>Product</th>
+<th>Qty</th>
+<th>Confirmation Status</th>
+<th>Send Confirmation</th>
+</tr>
+</thead>
+
+<tbody id="acceptedEnquiries"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<script>
+
+let allData=[];
+
+function loadEnquiries(){
+
+fetch("/admin/get-enquiries")
+
+.then(res=>res.json())
+
+.then(data=>{
+
+allData=data;
+
+renderAll(data);
+
+renderAction(data);
+
+renderAccepted(data);
+
+});
+
+}
+
+/* VIEW ALL */
+
+function renderAll(data){
+
+let html="";
+
+data.forEach(e=>{
+
+html+=`
+<tr>
+<td>${e.enquiryNo}</td>
+<td>${e.user_code}</td>
+<td>${e.user_name}</td>
+<td>${e.organisation || "-"}</td>
+<td>${e.email}</td>
+<td>${e.altEmail || "-"}</td>
+<td>${e.phone}</td>
+<td>${e.product_name}</td>
+<td>${e.product_code}</td>
+<td>${e.quantity}</td>
+<td>₹ ${e.price}</td>
+<td>${new Date(e.deadline).toLocaleDateString()}</td>
+<td>${e.customization || "-"}</td>
+<td><img src="/uploads/products/${e.image}"></td>
+<td class="status-${e.status.toLowerCase()}">${e.status}</td>
+<td>${renderDocs(e.documents)}</td>
+</tr>
+`;
+
+});
+
+document.getElementById("allEnquiries").innerHTML=html;
+
+}
+
+/* ACTION */
+
+function renderAction(data){
+
+let sortType=document.getElementById("filterType").value;
+
+data=data.filter(e=>e.status==="Pending");
+
+if(sortType==="enquiry_no"){
+data.sort((a,b)=>a.enquiryNo.localeCompare(b.enquiryNo));
+}
+
+if(sortType==="deadline"){
+data.sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));
+}
+
+let html="";
+
+data.forEach(e=>{
+
+html+=`
+<tr>
+<td>${e.enquiryNo}</td>
+<td>${e.email}</td>
+<td>${e.altEmail || "-"}</td>
+<td>${e.product_code}</td>
+<td>${e.product_name}</td>
+<td>${new Date(e.deadline).toLocaleDateString()}</td>
+<td>${e.customization || "-"}</td>
+<td>${e.quantity}</td>
+<td><img src="/uploads/products/${e.image}"></td>
+<td>
+<button class="accept" onclick="accept(${e.id})">Accept</button>
+<button class="reject" onclick="reject(${e.id})">Reject</button>
+</td>
+</tr>
+`;
+
+});
+
+document.getElementById("actionEnquiries").innerHTML=html;
+
+}
+
+/* ACCEPTED */
+
+function renderAccepted(data){
+
+let html="";
+
+data.forEach(e=>{
+
+if(e.status==="Accepted"){
+
+let sent = e.confirmation_sent && e.confirmation_sent.trim().toLowerCase()=="yes";
+
+let btnText = sent ? "Confirmation Sent" : "Send Confirmation";
+let btnClass = sent ? "confirm-btn sent" : "confirm-btn";
+let disabled = sent ? "disabled" : "";
+
+let statusLabel = e.confirmation_sent && e.confirmation_sent.trim().toLowerCase()=="yes"
+? '<span class="confirm-sent">Sent</span>'
+: '<span class="confirm-pending">Not Sent</span>';
+
+html+=`
+<tr>
+<td>${e.enquiryNo}</td>
+<td>${e.user_name}</td>
+<td>${e.email}</td>
+<td>${e.product_name}</td>
+<td>${e.quantity}</td>
+
+<td>${statusLabel}</td>
+
+<td>
+<button class="${btnClass}" ${disabled}
+onclick="sendMail(${e.id})">
+${btnText}
+</button>
+</td>
+</tr>
+`;
+
+}
+
+});
+
+document.getElementById("acceptedEnquiries").innerHTML=html;
+
+}
+
+/* ACTION BUTTONS */
+
+function accept(id){
+
+fetch("/admin/accept-enquiry/"+id,{method:"PUT"})
+.then(()=>loadEnquiries());
+
+}
+
+function reject(id){
+
+fetch("/admin/reject-enquiry/"+id,{method:"PUT"})
+.then(()=>loadEnquiries());
+
+}
+
+function sendMail(id){
+
+fetch("/admin/send-confirmation/"+id)
+.then(res=>res.text())
+.then(msg=>{
+alert(msg);
+loadEnquiries();
+});
+
+}
+
+/* SEARCH */
+
+document.getElementById("searchBox").addEventListener("input",function(){
+
+let value=this.value.toLowerCase();
+
+let filtered=allData.filter(e=>
+
+e.enquiryNo.toLowerCase().includes(value) ||
+e.user_name.toLowerCase().includes(value) ||
+(e.organisation && e.organisation.toLowerCase().includes(value)) ||
+e.email.toLowerCase().includes(value) ||
+e.deadline.includes(value)
+
+);
+
+renderAction(filtered);
+
+});
+
+document.getElementById("filterType").addEventListener("change",function(){
+renderAction(allData);
+});
+
+loadEnquiries();
+
+/* FILTERS */
+
+function applyViewFilters(){
+
+let data=[...allData];
+
+let enquirySort=document.getElementById("sortEnquiry").value;
+let deadlineSort=document.getElementById("sortDeadline").value;
+let status=document.getElementById("statusFilter").value;
+let column=document.getElementById("columnFilter").value;
+
+if(status){
+data=data.filter(e=>e.status===status);
+}
+
+if(column==="organisation"){
+data=data.filter(e=>e.organisation);
+}
+
+if(column==="product"){
+data=data.filter(e=>e.product_name);
+}
+
+if(column==="user"){
+data=data.filter(e=>e.user_name);
+}
+
+if(column==="deadline"){
+data=data.filter(e=>e.deadline);
+}
+
+if(enquirySort==="enq_asc"){
+data.sort((a,b)=>a.enquiryNo.localeCompare(b.enquiryNo));
+}
+
+if(enquirySort==="enq_desc"){
+data.sort((a,b)=>b.enquiryNo.localeCompare(a.enquiryNo));
+}
+
+if(deadlineSort==="dead_asc"){
+data.sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));
+}
+
+if(deadlineSort==="dead_desc"){
+data.sort((a,b)=>new Date(b.deadline)-new Date(a.deadline));
+}
+
+renderAll(data);
+
+}
+
+function renderDocs(docs){
+
+if(!docs) return "-";
+
+let files = docs.split(",");
+
+let html="";
+
+files.forEach(f=>{
+
+let url="/uploads/enquiry_docs/"+f;
+
+html+=`
+<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+
+<a href="${url}" target="_blank" style="color:#1976d2;text-decoration:none">
+View
+</a>
+
+<a href="${url}" download class="download-btn">⬇</a>
+
+</div>
+`;
+
+});
+
+return html;
+
+}
+
+</script>
+
+</body>
+</html>

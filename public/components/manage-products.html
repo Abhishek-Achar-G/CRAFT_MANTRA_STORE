@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Manage Products - CraftMantra</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial;
+    background:#f4f6f9;
+}
+
+/* CONTAINER */
+
+.container{
+    background:white;
+    padding:30px;
+    width:95%;
+    max-width:1100px;
+    margin:40px auto;
+    border-radius:10px;
+    box-shadow:0 0 15px rgba(0,0,0,0.1);
+}
+
+/* HEADER */
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    position:relative;
+    margin-bottom:15px;
+}
+
+/* LOGO CENTER */
+
+.logo{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+}
+
+.logo img{
+    height:45px;
+}
+
+/* BACK BUTTON */
+
+.back-btn{
+    background:#2e7d32;
+    color:white;
+    padding:7px 14px;
+    border-radius:5px;
+    text-decoration:none;
+    font-size:14px;
+}
+
+.back-btn:hover{
+    background:#1b5e20;
+}
+
+/* TOP BUTTONS */
+
+.top-buttons{
+    display:flex;
+    gap:10px;
+}
+
+.convert-excel{
+    background:#27ae60;
+    color:white;
+}
+
+.convert-pdf{
+    background:#8e44ad;
+    color:white;
+}
+
+button{
+    padding:8px 12px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+/* TABLE */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+th, td{
+    padding:10px;
+    border:1px solid #ccc;
+    text-align:center;
+}
+
+th{
+    background:#2c3e50;
+    color:white;
+}
+
+/* IMAGE */
+
+img{
+    border-radius:5px;
+}
+
+/* ACTION BUTTONS */
+
+.delete{
+    background:#e74c3c;
+    color:white;
+}
+
+.edit{
+    background:#3498db;
+    color:white;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.logo img{
+    height:35px;
+}
+
+table{
+    font-size:12px;
+}
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+<!-- HEADER -->
+
+<div class="header">
+
+<a href="javascript:history.back()" class="back-btn">← Back</a>
+
+<div class="logo">
+<img src="../images/logo.png">
+</div>
+
+<div class="top-buttons">
+
+<button class="convert-excel"
+onclick="window.location='/export-excel'">
+Convert to Excel
+</button>
+
+<button class="convert-pdf"
+onclick="window.location='/export-pdf'">
+Convert PDF
+</button>
+
+</div>
+
+</div>
+
+<h2 style="text-align:center;">Manage Products</h2>
+
+<!-- PRODUCT TABLE -->
+
+<table>
+
+<thead>
+
+<tr>
+<th>Product ID</th>
+<th>Name</th>
+<th>Category</th>
+<th>Description</th>
+<th>Price</th>
+<th>Image</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="productTable"></tbody>
+
+</table>
+
+</div>
+
+
+<script>
+
+/* LOAD PRODUCTS */
+
+function loadProducts(){
+
+fetch("/get-products")
+
+.then(res=>res.json())
+
+.then(data=>{
+
+let html="";
+
+data.forEach(p=>{
+
+html+=`
+<tr>
+
+<td>${p.product_code}</td>
+
+<td>${p.name}</td>
+
+<td>${p.category}</td>
+
+<td>${p.description}</td>
+
+<td>₹ ${p.price}</td>
+
+<td>
+<img src="/uploads/products/${p.image}" width="70">
+</td>
+
+<td>
+
+<button class="delete"
+onclick="deleteProduct(${p.id})">
+Delete
+</button>
+
+<button class="edit"
+onclick="editProduct(${p.id},'${p.name}','${p.description}',${p.price},'${p.category}')"
+Edit
+</button>
+
+</td>
+
+</tr>
+`;
+
+});
+
+document.getElementById("productTable").innerHTML=html;
+
+});
+
+}
+
+
+/* DELETE PRODUCT */
+
+function deleteProduct(id){
+
+if(!confirm("Delete this product?")) return;
+
+fetch("/delete-product/"+id,{
+method:"DELETE"
+})
+.then(()=>loadProducts());
+
+}
+
+
+/* EDIT PRODUCT */
+
+function editProduct(id,name,description,price,category){
+
+const newName=prompt("Enter product name",name);
+const newDesc=prompt("Enter description",description);
+const newPrice=prompt("Enter price",price);
+const newCategory=prompt("Enter category",category);
+
+if(!newName || !newPrice) return;
+
+const formData=new FormData();
+
+formData.append("name",newName);
+formData.append("description",newDesc);
+formData.append("price",newPrice);
+formData.append("category",newCategory);
+
+fetch("/update-product/"+id,{
+method:"PUT",
+body:formData
+})
+.then(()=>loadProducts());
+
+}
+
+
+/* LOAD ON PAGE OPEN */
+
+loadProducts();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Craft Mantra - Register</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+font-family:'Poppins', sans-serif;
+background:linear-gradient(to right,#f3f4ed,#ffffff);
+padding:15px;
+}
+
+/* main box */
+.register-box{
+
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+text-align:center;
+
+width:100%;
+max-width:380px;
+
+}
+
+/* logo */
+.logo{
+width:60px;
+margin-bottom:10px;
+}
+
+/* title */
+.title{
+font-family:'Cinzel Decorative', serif;
+font-size:26px;
+color:#5b2c06;
+margin:5px 0;
+}
+
+/* subtitle */
+.subtitle{
+color:#2e7d32;
+font-size:13px;
+margin-bottom:20px;
+}
+
+/* inputs */
+.register-box input{
+
+width:100%;
+padding:11px;
+margin-top:5px;
+margin-bottom:15px;
+
+border:1px solid #ccc;
+border-radius:6px;
+font-size:14px;
+
+}
+
+/* readonly user id */
+.register-box input[readonly]{
+background:#f3f3f3;
+color:#2e7d32;
+font-weight:600;
+}
+
+/* button */
+.register-box button{
+
+width:100%;
+padding:12px;
+
+background:#2e7d32;
+color:white;
+
+border:none;
+border-radius:6px;
+
+font-size:16px;
+cursor:pointer;
+
+transition:0.3s;
+
+}
+
+.register-box button:hover{
+background:#1b5e20;
+}
+
+/* back button */
+.back{
+
+display:block;
+margin-bottom:15px;
+
+text-decoration:none;
+color:#2e7d32;
+
+font-weight:600;
+text-align:left;
+
+font-size:14px;
+
+}
+
+/* register heading */
+.heading{
+margin-bottom:15px;
+color:#333;
+}
+
+/* mobile optimization */
+@media(max-width:480px){
+
+.register-box{
+padding:20px;
+}
+
+.title{
+font-size:22px;
+}
+
+.subtitle{
+font-size:12px;
+}
+
+.register-box input{
+font-size:13px;
+padding:10px;
+}
+
+.register-box button{
+font-size:15px;
+padding:11px;
+}
+
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="register-box">
+
+<a href="/index.html" class="back">← Back to Home</a>
+
+<img src="/images/logo.png" class="logo">
+
+<div class="title">Craft Mantra</div>
+
+<div class="subtitle">Touching Lives While Going Green</div>
+
+<h3 class="heading">User Register</h3>
+
+<form action="/register" method="POST">
+
+<input type="text" name="user_code" id="user_code" placeholder="Generating User ID..." readonly required>
+
+<input type="text" name="name" placeholder="Enter Full Name" required>
+
+<input type="email" name="email" placeholder="Enter Email Address" required>
+
+<input type="password" name="password" placeholder="Enter Password" required>
+
+<button type="submit">Register</button>
+
+</form>
+
+</div>
+
+
+<script>
+
+fetch("/generate-user-code")
+.then(res => res.json())
+.then(data => {
+
+document.getElementById("user_code").value = data.user_code;
+
+})
+.catch(()=>{
+
+document.getElementById("user_code").value="CMUID01";
+
+});
+
+</script>
+
+</body>
+</html>

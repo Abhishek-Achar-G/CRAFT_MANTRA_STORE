@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Manage Events</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#f4f6f9;
+    padding:20px;
+}
+
+h2{
+    text-align:center;
+}
+
+.event{
+    background:white;
+    padding:15px;
+    margin:15px;
+    border-radius:10px;
+}
+
+img{
+    width:120px;
+    margin:5px;
+}
+
+button{
+    padding:5px 10px;
+    border:none;
+    cursor:pointer;
+}
+
+.delete{
+    background:red;
+    color:white;
+}
+
+.back{
+    background:green;
+    color:white;
+}
+
+.back-btn{
+    position:absolute;
+    top:15px;
+    left:15px;
+    background:#2e7d32;
+    color:white;
+    padding:6px 12px;
+    font-size:13px;
+    border-radius:5px;
+    text-decoration:none;
+}
+
+.back-btn:hover{
+    background:#1b5e20;
+}
+
+.logo{
+    position:absolute;
+    top:15px;
+    right:15px;
+}
+
+.logo img{
+    height:50px;
+}
+
+</style>
+
+</head>
+<body>
+<div class="logo">
+    <img src="/images/logo.png" alt="Logo">
+</div>
+
+<a href="javascript:history.back()" class="back-btn">← Back</a>
+
+<h2>Manage Events</h2>
+
+<div id="eventList"></div>
+
+<script>
+
+async function loadEvents(){
+
+    const res = await fetch("/get-events");
+
+    const events = await res.json();
+
+    const container =
+    document.getElementById("eventList");
+
+    container.innerHTML="";
+
+    events.forEach(e=>{
+
+        container.innerHTML += `
+
+        <div class="event">
+
+        <h3>${e.name}</h3>
+
+        <p>Date: ${e.date}</p>
+
+        <p>${e.description}</p>
+
+        ${e.image1 ? `<img src="/uploads/events/${e.image1}">` : ""}
+        ${e.image2 ? `<img src="/uploads/events/${e.image2}">` : ""}
+        ${e.image3 ? `<img src="/uploads/events/${e.image3}">` : ""}
+
+        <br><br>
+
+        <button class="delete"
+        onclick="deleteEvent(${e.id})">
+        Delete
+        </button>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+async function deleteEvent(id){
+
+    if(confirm("Delete event?")){
+
+        await fetch("/delete-event/"+id,{
+            method:"DELETE"
+        });
+
+        alert("Event deleted");
+
+        loadEvents();
+    }
+
+}
+
+loadEvents();
+
+function goDashboard(){
+    window.location.href="/admin/admin-dashboard.html";
+}
+
+</script>
+
+</body>
+</html>

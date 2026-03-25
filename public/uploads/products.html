@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Product Upload</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#f4f6f9;
+    padding:20px;
+}
+
+form{
+    background:white;
+    padding:20px;
+    width:350px;
+    border-radius:10px;
+}
+
+input, textarea{
+    width:100%;
+    padding:8px;
+    margin-bottom:10px;
+}
+
+button{
+    padding:10px;
+    background:#28a745;
+    color:white;
+    border:none;
+    width:100%;
+}
+
+.product{
+    background:white;
+    padding:15px;
+    margin-top:15px;
+    border-radius:10px;
+}
+
+img{
+    margin-top:10px;
+    border-radius:5px;
+}
+
+</style>
+
+</head>
+<body>
+
+<h2>Add Product</h2>
+
+<form id="productForm" enctype="multipart/form-data">
+
+    <label>Product Name:</label>
+    <input type="text" name="name" required>
+
+    <label>Price Range:</label>
+    <input type="text" name="price" required>
+
+    <label>Description:</label>
+    <textarea name="description" required></textarea>
+
+    <label>Product Images:</label>
+    <input type="file" name="images" multiple required>
+
+    <button type="submit">Upload Product</button>
+
+</form>
+<hr>
+
+<h2>Product List</h2>
+
+<div id="productList"></div>
+
+
+<script>
+
+// Upload product
+document.getElementById("productForm").addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    const response = await fetch("/add-product", {
+        method: "POST",
+        body: formData
+    });
+
+    const result = await response.text();
+
+    alert(result);
+
+    loadProducts();
+
+});
+
+
+// Load products
+async function loadProducts() {
+
+    const res = await fetch("/get-products");
+
+    const products = await res.json();
+
+    const container = document.getElementById("productList");
+
+    container.innerHTML = "";
+
+    products.forEach(p => {
+
+        container.innerHTML += `
+            <div class="product">
+
+                <h3>${p.name}</h3>
+
+                <p><b>Price:</b> ${p.price}</p>
+
+                <p><b>Description:</b> ${p.description}</p>
+
+                <img src="/uploads/products/${p.image}" width="150">
+
+            </div>
+        `;
+
+    });
+
+}
+
+loadProducts();
+
+</script>
+
+</body>
+</html>

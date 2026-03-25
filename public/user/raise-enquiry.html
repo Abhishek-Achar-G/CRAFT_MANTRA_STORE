@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Raise Enquiry - CraftMantra</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+margin:0;
+font-family:Poppins, sans-serif;
+background:#f4f6f9;
+}
+
+/* HEADER */
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 30px;
+background:white;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.header h2{
+color:#2e7d32;
+margin:0;
+}
+
+.logo{
+height:55px;
+}
+
+/* CONTAINER */
+.container{
+background:white;
+padding:25px;
+border-radius:12px;
+max-width:500px;
+margin:30px auto;
+box-shadow:0 4px 20px rgba(0,0,0,0.1);
+}
+
+.back-link{
+text-decoration:none;
+font-weight:600;
+color:#1976d2;
+display:inline-block;
+margin-bottom:15px;
+}
+
+.product-box{
+text-align:center;
+margin-bottom:15px;
+}
+
+.product-box img{
+width:100%;
+max-height:250px;
+object-fit:cover;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+.product-title{
+font-size:18px;
+font-weight:600;
+color:#333;
+}
+
+.product-price{
+font-size:16px;
+color:#2e7d32;
+font-weight:600;
+margin-top:5px;
+}
+
+input, textarea{
+width:100%;
+padding:10px;
+margin:6px 0;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:14px;
+}
+
+textarea{
+resize:none;
+height:80px;
+}
+
+button{
+background:#1976d2;
+color:white;
+padding:12px;
+border:none;
+width:100%;
+border-radius:6px;
+cursor:pointer;
+font-weight:600;
+margin-top:10px;
+}
+
+button:hover{
+background:#0d47a1;
+}
+
+#preview{
+margin-top:10px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.preview-box{
+position:relative;
+display:inline-block;
+}
+
+.preview-box img{
+width:90px;
+height:90px;
+object-fit:cover;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+.remove-btn{
+position:absolute;
+bottom:2px;
+right:2px;
+background:red;
+color:white;
+border-radius:50%;
+font-size:12px;
+cursor:pointer;
+padding:2px 6px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<h2>CraftMantra</h2>
+<img src="/images/logo.png" class="logo">
+</div>
+
+<div class="container">
+
+<a href="/user/user-dashboard.html" class="back-link">
+← Back to Dashboard
+</a>
+
+<h3 id="enquiryNo"></h3>
+
+<div class="product-box">
+<img id="productImage">
+<div class="product-title" id="productTitle"></div>
+<div class="product-price" id="productPrice"></div>
+<p id="productDescription"></p>
+</div>
+
+<form onsubmit="submitEnquiry(event)" enctype="multipart/form-data">
+
+<input type="text" id="username" placeholder="User Name" readonly>
+<input type="email" id="email" placeholder="Email" readonly>
+<input type="email" id="altEmail" placeholder="Alternative Email">
+<input type="text" id="org" placeholder="Institute / Organisation">
+<input type="text" id="phone" placeholder="Contact Number">
+<input type="number" id="qty" placeholder="Quantity" required>
+
+<label>Mention Deadline (Date):</label>
+<input type="date" id="deadline">
+
+<textarea id="custom" placeholder="Customization Details"></textarea>
+
+<label>Upload Documents (Max 3)</label>
+<input type="file" id="documents" multiple accept=".pdf,.jpg,.jpeg,.png" onchange="previewFiles()">
+
+<div id="preview"></div>
+
+<button type="submit">Submit Enquiry</button>
+
+</form>
+
+</div>
+
+<script>
+
+let enquiryNumber="";
+let productId=null;
+
+/* GET PRODUCT ID */
+const urlParams=new URLSearchParams(window.location.search);
+productId=urlParams.get("product_id");
+
+if(!productId){
+alert("Invalid product");
+window.location.href="/user/user-dashboard.html";
+}
+
+/* LOAD PRODUCT */
+fetch("/get-product/"+productId)
+.then(res=>res.json())
+.then(p=>{
+
+if(!p.id){
+alert("Product not found");
+return;
+}
+
+document.getElementById("productTitle").innerText=
+p.product_code+" - "+p.name;
+
+document.getElementById("productImage").src=
+"/uploads/products/"+p.image;
+
+document.getElementById("productDescription").innerText=
+p.description;
+
+document.getElementById("productPrice").innerText=
+"₹ "+p.price;
+
+});
+
+/* LOAD USER */
+fetch("/get-user")
+.then(res=>res.json())
+.then(data=>{
+
+if(!data.success){
+alert("Please login first");
+window.location.href="/auth/login.html";
+return;
+}
+
+document.getElementById("username").value=data.user.name;
+document.getElementById("email").value=data.user.email;
+
+});
+
+/* GENERATE ENQUIRY NUMBER */
+fetch("/generate-enquiry-no")
+.then(res=>res.json())
+.then(data=>{
+enquiryNumber=data.enquiryNo;
+
+document.getElementById("enquiryNo").innerHTML=
+"<strong>Enquiry No:</strong> "+enquiryNumber;
+});
+
+
+/* SUBMIT ENQUIRY */
+function submitEnquiry(e){
+
+e.preventDefault();
+
+let formData=new FormData();
+
+formData.append("enquiryNo",enquiryNumber);
+formData.append("product_id",productId);
+formData.append("altEmail",document.getElementById("altEmail").value);
+formData.append("org",document.getElementById("org").value);
+formData.append("phone",document.getElementById("phone").value);
+formData.append("qty",document.getElementById("qty").value);
+formData.append("deadline",document.getElementById("deadline").value);
+formData.append("custom",document.getElementById("custom").value);
+
+let fileInput=document.getElementById("documents");
+
+if(fileInput.files.length>3){
+alert("Maximum 3 files allowed");
+return;
+}
+
+let files=document.getElementById("documents").files;
+
+for(let i=0;i<files.length;i++){
+formData.append("documents",files[i]);
+}
+
+fetch("/submit-enquiry",{
+method:"POST",
+body:formData
+})
+.then(res=>res.json())
+.then(data=>{
+
+if(data.success){
+alert("Enquiry Submitted Successfully");
+window.location.href="/user/user-dashboard.html";
+}else{
+alert("Submission Failed");
+}
+
+})
+.catch(err=>{
+console.log(err);
+alert("Server Error");
+});
+
+}
+
+
+/* PREVIEW FILES */
+
+let selectedFiles = [];
+
+function previewFiles(){
+
+let preview=document.getElementById("preview");
+preview.innerHTML="";
+
+let files=document.getElementById("documents").files;
+
+selectedFiles=[...files];
+
+if(selectedFiles.length>3){
+alert("Maximum 3 documents allowed");
+document.getElementById("documents").value="";
+selectedFiles=[];
+return;
+}
+
+selectedFiles.forEach((file,index)=>{
+
+let reader=new FileReader();
+
+reader.onload=function(e){
+
+let box=document.createElement("div");
+box.className="preview-box";
+
+let img=document.createElement("img");
+img.src=e.target.result;
+
+let remove=document.createElement("span");
+remove.innerHTML="❌";
+remove.className="remove-btn";
+
+remove.onclick=function(){
+
+selectedFiles.splice(index,1);
+box.remove();
+
+};
+
+box.appendChild(img);
+box.appendChild(remove);
+
+preview.appendChild(box);
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+}
+
+</script>
+
+</body>
+</html>

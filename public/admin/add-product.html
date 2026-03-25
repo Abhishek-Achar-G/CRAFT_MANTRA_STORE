@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add Product - Craft Mantra</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+font-family:'Poppins',sans-serif;
+background:#f4f6f9;
+}
+
+/* ================= HEADER ================= */
+
+.header{
+background:white;
+text-align:center;
+padding:15px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.header img{
+height:50px;
+}
+
+.header h2{
+margin:5px 0 0;
+color:#2e7d32;
+}
+
+/* ================= FORM CONTAINER ================= */
+
+.wrapper{
+display:flex;
+justify-content:center;
+padding:30px 15px;
+}
+
+.container{
+background:white;
+padding:30px;
+width:100%;
+max-width:600px;
+border-radius:12px;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+position:relative;
+}
+
+.back{
+position:absolute;
+top:20px;
+left:20px;
+text-decoration:none;
+font-size:20px;
+color:#2c3e50;
+}
+
+.back:hover{
+color:#1976d2;
+}
+
+h3{
+text-align:center;
+margin-bottom:20px;
+}
+
+/* ================= FORM ================= */
+
+label{
+font-weight:600;
+font-size:14px;
+}
+
+input, textarea, select{
+width:100%;
+padding:10px;
+margin-top:5px;
+margin-bottom:15px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:14px;
+}
+
+textarea{
+resize:none;
+}
+
+button{
+width:100%;
+padding:12px;
+background:#1976d2;
+color:white;
+border:none;
+border-radius:6px;
+font-size:15px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0d47a1;
+}
+
+.note{
+font-size:12px;
+color:gray;
+margin-top:-10px;
+margin-bottom:15px;
+}
+
+/* ================= IMAGE PREVIEW ================= */
+
+.preview-container{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+margin-bottom:15px;
+}
+
+.preview-container img{
+width:90px;
+height:90px;
+object-fit:cover;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+.back-btn{
+    position:absolute;
+    top:15px;
+    left:15px;
+    background:#2e7d32;
+    color:white;
+    padding:6px 12px;
+    font-size:13px;
+    border-radius:5px;
+    text-decoration:none;
+}
+
+.back-btn:hover{
+    background:#1b5e20;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:600px){
+.container{
+padding:20px;
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+<img src="/images/logo.png" alt="Craft Mantra Logo">
+<h2>Craft Mantra</h2>
+</div>
+
+<div class="wrapper">
+<div class="container">
+
+
+<a href="javascript:history.back()" class="back-btn">← Back</a>
+
+<h3>Add Product</h3>
+
+<form action="/add-product" method="POST" enctype="multipart/form-data">
+
+<label>Product ID:</label>
+<input type="text" id="productCode" name="product_code" readonly>
+
+<label>Product Name:</label>
+<input type="text" name="name" required>
+
+<label>Category:</label>
+<select name="category" required>
+<option value="">Select Category</option>
+<option value="Bags">Bags</option>
+<option value="Mementos">Mementos</option>
+<option value="Souvenirs">Souvenirs</option>
+<option value="Decor">Decor</option>
+<option value="Accessories">Accessories</option>
+<option value="Conference Kit">Conference Kit</option>
+<option value="T-Shirt">T-Shirt</option>
+<option value="Others">Others</option>
+</select>
+
+<label>Price (₹):</label>
+<input type="number" name="price" placeholder="Enter Price (e.g. 799)" required>
+
+<label>Description:</label>
+<textarea name="description" rows="3" required></textarea>
+
+<label>Product Images:</label>
+<input type="file" name="images" id="imageInput" multiple required>
+
+<div class="preview-container" id="preview"></div>
+
+<p class="note">Multiple images allowed. Preview shown above.</p>
+
+<button type="submit">Add Product</button>
+
+</form>
+
+</div>
+</div>
+
+<script>
+
+/* IMAGE PREVIEW */
+
+document.getElementById("imageInput").addEventListener("change", function(){
+
+let preview = document.getElementById("preview");
+preview.innerHTML = "";
+
+let files = this.files;
+
+for(let i=0; i<files.length; i++){
+
+let reader = new FileReader();
+
+reader.onload = function(e){
+
+let img = document.createElement("img");
+img.src = e.target.result;
+preview.appendChild(img);
+
+};
+
+reader.readAsDataURL(files[i]);
+}
+
+});
+
+// AUTO-GENERATE PRODUCT CODE
+document.addEventListener("DOMContentLoaded", function(){
+
+    fetch("/get-product-code")
+    .then(res => res.json())
+    .then(data => {
+
+        console.log("Response:", data); // DEBUG
+
+        if(data.success){
+            document.getElementById("productCode").value = data.productCode;
+        }
+
+    })
+    .catch(err => console.log("Fetch error:", err));
+
+});
+
+function goDashboard(){
+    window.location.href="/admin/admin-dashboard.html";
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>User Dashboard - Craft Mantra</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{box-sizing:border-box;}
+
+body{
+margin:0;
+font-family:'Poppins',sans-serif;
+background:#f4f6f9;
+}
+
+/* ================= HEADER ================= */
+
+.header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+background:white;
+padding:12px 20px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+position:sticky;
+top:0;
+z-index:1000;
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.logo img{
+height:40px;
+}
+
+.logo h2{
+margin:0;
+color:#2e7d32;
+}
+
+.menu-toggle{
+display:none;
+font-size:24px;
+cursor:pointer;
+}
+
+/* ================= LAYOUT ================= */
+
+.container{
+display:flex;
+min-height:calc(100vh - 60px);
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+width:260px;
+background:white;
+padding:20px;
+box-shadow:2px 0 10px rgba(0,0,0,0.1);
+transition:0.3s;
+}
+
+.sidebar.active{
+left:0;
+}
+
+.profile{
+text-align:center;
+margin-bottom:20px;
+}
+
+.profile img{
+width:100px;
+height:100px;
+border-radius:50%;
+object-fit:cover;
+border:3px solid #2e7d32;
+}
+
+.profile h3{margin:10px 0 5px;}
+.profile p{margin:0;font-size:14px;color:#555;}
+
+.menu a{
+display:block;
+padding:10px;
+margin:8px 0;
+background:#2e7d32;
+color:white;
+text-decoration:none;
+border-radius:5px;
+cursor:pointer;
+text-align:center;
+}
+
+.menu a:hover{
+background:#1b5e20;
+}
+
+/* ================= MAIN ================= */
+
+.main{
+flex:1;
+padding:20px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+}
+
+/* ================= CARD ================= */
+
+.card{
+background:white;
+border-radius:10px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+overflow:hidden;
+}
+
+.card img{
+width:100%;
+height:180px;
+object-fit:cover;
+}
+
+.card-content{
+padding:15px;
+}
+
+button{
+padding:8px 12px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+margin-top:8px;
+}
+
+.view-btn{background:#2e7d32;color:white;}
+.enquiry-btn{background:#1976d2;color:white;}
+.edit-btn{background:#1976d2;color:white;}
+.reject-btn{background:red;color:white;}
+
+.progress-bar{
+background:#eee;
+height:10px;
+border-radius:20px;
+margin:10px 0;
+overflow:hidden;
+}
+
+.progress-fill{
+height:10px;
+border-radius:20px;
+transition:0.3s;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:768px){
+
+.container{
+flex-direction:column;
+}
+
+.sidebar{
+position:fixed;
+left:-100%;
+top:60px;
+height:100%;
+width:220px;
+z-index:999;
+}
+
+.menu-toggle{
+display:block;
+}
+
+}
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+<div class="logo">
+<img src="/images/logo.png" alt="Craft Mantra Logo">
+<h2>Craft Mantra</h2>
+</div>
+<div class="menu-toggle" onclick="toggleMenu()">☰</div>
+</div>
+
+<div class="container">
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+
+<div class="profile">
+<img id="dp" src="/images/user_logo.jpg">
+<h3 id="name">User</h3>
+<p id="email">Email</p>
+</div>
+
+<div class="menu">
+<a onclick="loadProducts()">Dashboard</a>
+<a onclick="loadEvents()">Events</a>
+<a onclick="showProfile()">My Profile</a>
+<a onclick="logout()">Logout</a>
+
+</div>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+<div id="content">Loading...</div>
+</div>
+
+</div>
+
+<script>
+
+/* Toggle sidebar */
+function toggleMenu(){
+document.getElementById("sidebar").classList.toggle("active");
+}
+
+/* Load User */
+function loadUser(){
+fetch("/get-user")
+.then(res=>res.json())
+.then(data=>{
+if(!data.success){location.href="/auth/login.html";return;}
+document.getElementById("name").innerText=data.user.name;
+document.getElementById("email").innerText=data.user.email;
+
+let dp=data.user.dp==="user_logo.jpg"
+? "/images/user_logo.jpg"
+: "/uploads/users/"+data.user.dp;
+
+document.getElementById("dp").src=dp;
+});
+}
+
+/* Products */
+function loadProducts(){
+
+Promise.all([
+fetch("/get-products").then(res=>res.json()),
+fetch("/get-categories").then(res=>res.json())
+]).then(([products, categories])=>{
+
+let html=`
+<h2>Products</h2>
+
+<div class="filter-bar">
+
+<input type="text" id="searchInput" placeholder="Search product name">
+
+<select id="categoryFilter">
+<option value="">All Categories</option>
+${categories.map(c=>`<option value="${c.category}">${c.category}</option>`).join("")}
+</select>
+
+<select id="priceSort">
+<option value="">Sort By Price</option>
+<option value="low">Low to High</option>
+<option value="high">High to Low</option>
+</select>
+
+<button onclick="applyFilters()">Search</button>
+
+</div>
+
+<div class="grid" id="productGrid">
+${generateProductCards(products)}
+</div>
+`;
+
+document.getElementById("content").innerHTML=html;
+
+});
+}
+/* ================= GENERATE PRODUCT CARDS ================= */
+
+function generateProductCards(products){
+let html="";
+products.forEach(p=>{
+html+=`
+<div class="card">
+<img src="/uploads/products/${p.image}">
+<div class="card-content">
+<h3>${p.name}</h3>
+<p><strong>Category:</strong> ${p.category}</p>
+<p>₹ ${p.price}</p>
+<button class="view-btn" onclick="viewProduct(${p.id})">View</button>
+<button class="enquiry-btn" onclick="raiseEnquiry(${p.id})">Raise Enquiry</button>
+</div>
+</div>
+`;
+});
+return html;
+}
+
+/* ================= APPLY FILTER ================= */
+
+function applyFilters(){
+
+let search=document.getElementById("searchInput").value;
+let category=document.getElementById("categoryFilter").value;
+let sort=document.getElementById("priceSort").value;
+
+fetch(`/get-products?search=${search}&category=${category}&sort=${sort}`)
+.then(res=>res.json())
+.then(products=>{
+document.getElementById("productGrid").innerHTML=generateProductCards(products);
+});
+}
+
+function raiseEnquiry(id){
+location.href="/user/raise-enquiry.html?product_id="+id;
+}
+
+function viewProduct(id){
+location.href="/user/product-view.html?product_id="+id;
+}
+
+function logout(){
+fetch("/logout").then(()=>location.href="/index.html");
+}
+
+loadUser();
+loadProducts();
+
+/* Events */
+function loadEvents(){
+fetch("/get-events")
+.then(res=>res.json())
+.then(events=>{
+let html="<h2>Events</h2><div class='grid'>";
+events.forEach(e=>{
+html+=`
+<div class="card">
+<img src="/uploads/events/${e.image1}">
+<div class="card-content">
+<h3>${e.name}</h3>
+<p>${e.date}</p>
+</div>
+</div>`;
+});
+html+="</div>";
+document.getElementById("content").innerHTML=html;
+});
+}
+
+/* Profile */
+function showProfile(){
+fetch("/get-user")
+.then(res=>res.json())
+.then(data=>{
+let user=data.user;
+
+let dp=user.dp==="user_logo.jpg"
+? "/images/user_logo.jpg"
+: "/uploads/users/"+user.dp;
+
+let html=`
+<h2>My Profile</h2>
+<div class="card" style="padding:20px;text-align:center;">
+
+<img id="profileDP" src="${dp}" 
+style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid #2e7d32;">
+
+<br>
+<input type="file" id="profileDpUpload" hidden>
+<button class="edit-btn" onclick="document.getElementById('profileDpUpload').click()">Edit DP</button>
+
+<hr style="margin:20px 0;">
+
+<p><strong>Name:</strong> ${user.name}</p>
+<p><strong>User Code:</strong> ${user.user_code}</p>
+<p><strong>Email:</strong> ${user.email}</p>
+
+</div>
+
+<h2 style="margin-top:30px;">My Enquiry Status</h2>
+<div id="myEnquiries">Loading...</div>
+`;
+
+document.getElementById("content").innerHTML=html;
+
+document.getElementById("profileDpUpload")
+.addEventListener("change",function(){
+
+let file=this.files[0];
+let form=new FormData();
+form.append("dp",file);
+
+fetch("/upload-dp",{method:"POST",body:form})
+.then(res=>res.json())
+.then(d=>{
+if(d.success){
+document.getElementById("dp").src="/uploads/users/"+d.filename;
+document.getElementById("profileDP").src="/uploads/users/"+d.filename;
+alert("DP Updated");
+}
+});
+
+});
+
+loadMyEnquiries();
+});
+}
+
+/* Enquiries */
+function loadMyEnquiries(){
+fetch("/get-my-enquiries")
+.then(res=>res.json())
+.then(data=>{
+let container=document.getElementById("myEnquiries");
+
+if(data.length===0){
+container.innerHTML="<p style='color:red;'>No Enquiry Raised</p>";
+return;
+}
+
+let html="<div class='grid'>";
+
+data.forEach(e=>{
+let width="50%";
+let color="orange";
+
+if(e.status==="Accepted"){width="100%";color="green";}
+if(e.status==="Rejected"){width="100%";color="red";}
+
+html+=`
+<div class="card">
+<img src="/uploads/products/${e.image}">
+<div class="card-content">
+<h3>${e.product_name}</h3>
+<p><strong>Product Code:</strong> ${e.product_code}</p>
+<p><strong>Quantity:</strong> ${e.quantity}</p>
+<p><strong>Deadline:</strong> ${e.deadline||"-"}</p>
+<p><strong>Customization:</strong> ${e.customization||"-"}</p>
+
+<div class="progress-bar">
+<div class="progress-fill" style="width:${width};background:${color};"></div>
+</div>
+
+<p><strong>Status:</strong>
+<span style="color:${color};font-weight:bold;">${e.status}</span>
+</p>
+`;
+
+if(e.status==="Pending"){
+html+=`
+<button class="edit-btn" onclick="editEnquiry(${e.id})">Edit</button>
+<button class="reject-btn" onclick="rejectEnquiry(${e.id})">Reject</button>
+`;
+}
+
+html+=`</div></div>`;
+});
+
+html+="</div>";
+container.innerHTML=html;
+});
+}
+
+/* Edit */
+function editEnquiry(id){
+let qty=prompt("Edit Quantity:");
+if(qty===null) return;
+let deadline=prompt("Edit Deadline (YYYY-MM-DD):");
+if(deadline===null) return;
+let custom=prompt("Edit Customization:");
+if(custom===null) return;
+
+fetch("/update-enquiry",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({id,qty,deadline,custom})
+})
+.then(res=>res.json())
+.then(d=>{
+if(d.success){alert("Updated");loadMyEnquiries();}
+});
+}
+
+/* Reject */
+function rejectEnquiry(id){
+if(!confirm("Are you sure?")) return;
+
+fetch("/reject-enquiry",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({id})
+})
+.then(res=>res.json())
+.then(d=>{
+if(d.success){alert("Rejected");loadMyEnquiries();}
+});
+}
+
+function raiseEnquiry(id){
+location.href="/user/raise-enquiry.html?product_id="+id;
+}
+
+function logout(){
+fetch("/logout").then(()=>location.href="/index.html");
+}
+
+loadUser();
+loadProducts();
+
+</script>
+
+</body>
+</html>

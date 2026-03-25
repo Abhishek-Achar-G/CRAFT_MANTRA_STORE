@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#f4f6f9;
+}
+
+/* HEADER */
+
+.header{
+background:white;
+padding:15px 20px;
+display:flex;
+justify-content:center;
+align-items:center;
+position:relative;
+border-bottom:1px solid #ddd;
+}
+
+.logo-img{
+position:absolute;
+right:20px;
+height:40px;
+}
+
+.header img{
+width:40px;
+height:40px;
+border-radius:50%;
+}
+
+.title{
+color:#27ae60;
+font-size:26px;
+font-weight:600;
+}
+
+.logout{
+background:#e74c3c;
+}
+
+/* LAYOUT */
+
+.container{
+display:flex;
+min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:220px;
+background:#34495e;
+}
+
+.sidebar a{
+display:block;
+padding:13px 20px;
+color:white;
+text-decoration:none;
+cursor:pointer;
+}
+
+.sidebar a:hover{
+background:#2c3e50;
+}
+
+/* CONTENT */
+
+.content{
+flex:1;
+padding:30px;
+}
+
+.profile-box{
+background:white;
+padding:30px;
+margin-top:20px;
+border-radius:10px;
+width:350px;
+text-align:center;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.profile-box img{
+width:120px;
+height:120px;
+border-radius:50%;
+object-fit:cover;
+margin-bottom:10px;
+}
+
+.user-info{
+margin-top:15px;
+text-align:left;
+}
+
+.user-info p{
+margin:8px 0;
+}
+
+.edit-btn{
+margin-top:10px;
+padding:8px 15px;
+background:#3498db;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+.edit-btn:hover{
+background:#2980b9;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.container{
+flex-direction:column;
+}
+
+.sidebar{
+width:100%;
+display:flex;
+overflow:auto;
+}
+
+.sidebar a{
+flex:1;
+text-align:center;
+font-size:13px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+<h1 class="title">Craft Mantra</h1>
+
+<img class="logo-img" src="/images/logo.png">
+
+</div>
+
+
+<div class="container">
+
+<div class="sidebar">
+
+<a href="/admin/add-product.html">Add Product</a>
+
+<a href="/components/manage-products.html">Manage Products</a>
+
+<a href="/components/admin-enquiry.html">Manage Enquiries</a>
+
+<a href="/components/add-event.html">Add Event</a>
+
+<a href="/components/manage-events.html">Manage Events</a>
+
+<a href="/components/view-feedback.html">View Feedback</a>
+
+<a href="/auth/login.html" class="logout">Logout</a>
+
+</div>
+
+
+<div class="content" id="content">
+
+<h2>Welcome Staff 👋</h2>
+
+<div class="profile-box">
+
+<img id="userDP" src="/images/user_logo.jpg">
+
+<button class="edit-btn" onclick="selectDP()">Edit DP</button>
+
+<input type="file" id="dpFile" style="display:none">
+
+<div class="user-info">
+<p><b>User ID:</b> <span id="userCode"></span></p>
+<p><b>Name:</b> <span id="userName"></span></p>
+<p><b>Email:</b> <span id="userEmail"></span></p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+function openPage(page){
+
+fetch("/components/"+page+".html")
+.then(res=>res.text())
+.then(html=>{
+document.getElementById("content").innerHTML=html
+})
+
+}
+
+fetch("/get-user")
+.then(res => res.json())
+.then(data => {
+
+if(!data.success) return;
+
+const user = data.user;
+
+document.getElementById("userCode").innerText = user.user_code;
+document.getElementById("userName").innerText = user.name;
+document.getElementById("userEmail").innerText = user.email;
+
+if(user.dp){
+document.getElementById("userDP").src="/uploads/users/" + user.dp;
+}else{
+document.getElementById("userDP").src="/images/user_logo.jpg";
+}
+});
+
+function selectDP(){
+document.getElementById("dpFile").click();
+}
+
+document.getElementById("dpFile").addEventListener("change",function(){
+
+const file=this.files[0];
+
+if(!file) return;
+
+const formData=new FormData();
+formData.append("dp",file);
+
+fetch("/upload-dp",{
+method:"POST",
+body:formData
+})
+.then(res=>res.json())
+.then(data=>{
+
+if(data.success){
+
+document.getElementById("userDP").src="/uploads/users/"+data.filename;
+
+alert("Profile picture updated");
+
+}else{
+
+alert("Upload failed");
+
+}
+
+});
+
+});
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Craft Mantra - Login</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+
+margin:0;
+min-height:100vh;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+font-family:'Poppins', sans-serif;
+
+background:linear-gradient(to right,#f3f4ed,#ffffff);
+
+padding:15px;
+
+}
+
+/* main box */
+.login-box{
+
+background:white;
+
+padding:30px;
+
+border-radius:12px;
+
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+
+text-align:center;
+
+width:100%;
+max-width:380px;
+
+}
+
+/* logo */
+.logo{
+width:65px;
+margin-bottom:10px;
+}
+
+/* title */
+.title{
+
+font-family:'Cinzel Decorative', serif;
+
+font-size:26px;
+
+color:#5b2c06;
+
+margin:5px 0;
+
+}
+
+/* subtitle */
+
+.subtitle{
+
+color:#2e7d32;
+
+font-size:13px;
+
+margin-bottom:20px;
+
+}
+
+/* inputs */
+
+.login-box input{
+
+width:100%;
+
+padding:11px;
+
+margin-top:5px;
+margin-bottom:15px;
+
+border:1px solid #ccc;
+
+border-radius:6px;
+
+font-size:14px;
+
+transition:0.2s;
+
+}
+
+/* focus */
+
+.login-box input:focus{
+
+border-color:#2e7d32;
+outline:none;
+
+}
+
+/* login button */
+
+.login-btn{
+
+width:100%;
+
+padding:12px;
+
+background:#2e7d32;
+
+color:white;
+
+border:none;
+
+border-radius:6px;
+
+font-size:16px;
+
+cursor:pointer;
+
+transition:0.3s;
+
+margin-bottom:10px;
+
+}
+
+.login-btn:hover{
+background:#1b5e20;
+}
+
+/* forgot password button */
+
+.forgot-btn{
+
+width:100%;
+
+padding:12px;
+
+background:#1976d2;
+
+color:white;
+
+border:none;
+
+border-radius:6px;
+
+font-size:15px;
+
+cursor:pointer;
+
+transition:0.3s;
+
+}
+
+.forgot-btn:hover{
+background:#0d47a1;
+}
+
+/* back button */
+
+.back{
+
+display:block;
+
+margin-bottom:15px;
+
+text-decoration:none;
+
+color:#2e7d32;
+
+font-weight:600;
+
+text-align:left;
+
+font-size:14px;
+
+}
+
+/* heading */
+
+.heading{
+
+margin-bottom:15px;
+
+color:#333;
+
+}
+
+/* register link */
+
+.register-link{
+
+margin-top:15px;
+
+font-size:14px;
+
+}
+
+.register-link a{
+
+color:#2e7d32;
+
+text-decoration:none;
+
+font-weight:600;
+
+}
+
+/* mobile */
+
+@media(max-width:480px){
+
+.login-box{
+padding:20px;
+}
+
+.title{
+font-size:22px;
+}
+
+.login-box input{
+font-size:13px;
+padding:10px;
+}
+
+.login-btn,.forgot-btn{
+font-size:14px;
+padding:10px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="login-box">
+
+<a href="/index.html" class="back">← Back to Home</a>
+
+<img src="/images/logo.png" class="logo">
+
+<div class="title">Craft Mantra</div>
+
+<div class="subtitle">Touching Lives While Going Green</div>
+
+<h3 class="heading">User Login</h3>
+
+<form action="/login" method="POST">
+
+<input 
+type="text" 
+name="user_code" 
+placeholder="Enter User ID "
+required
+>
+
+<input 
+type="email" 
+name="email" 
+placeholder="Enter Email"
+required
+>
+
+<input 
+type="password" 
+name="password" 
+placeholder="Enter Password"
+required
+>
+
+<button type="submit" class="login-btn">Login</button>
+
+</form>
+
+<button 
+class="forgot-btn"
+onclick="location.href='/auth/forgot-password.html'"
+>
+Forgot Password ?
+</button>
+
+<div class="register-link">
+
+Don't have account? 
+<a href="/auth/register.html">Register</a>
+
+</div>
+
+</div>
+
+</body>
+</html>

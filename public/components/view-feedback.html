@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>View Feedback - Craft Mantra</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#f4f6f9;
+}
+
+/* HEADER */
+
+.header{
+background:white;
+padding:15px 20px;
+display:flex;
+justify-content:center;
+align-items:center;
+position:relative;
+border-bottom:1px solid #ddd;
+}
+
+.logo{
+position:absolute;
+right:20px;
+height:40px;
+}
+
+.back-btn{
+position:absolute;
+left:20px;
+background:#3498db;
+color:white;
+padding:8px 15px;
+border-radius:5px;
+text-decoration:none;
+font-size:14px;
+}
+
+.back-btn:hover{
+background:#2980b9;
+}
+
+.title{
+font-size:26px;
+color:#27ae60;
+font-weight:600;
+}
+
+/* CONTENT */
+
+.container{
+padding:30px;
+}
+
+.table-box{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+overflow-x:auto;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th{
+background:#27ae60;
+color:white;
+padding:12px;
+text-align:left;
+}
+
+td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+tr:hover{
+background:#f1f1f1;
+}
+
+.view-img{
+background:#3498db;
+color:white;
+padding:5px 10px;
+border-radius:4px;
+text-decoration:none;
+font-size:13px;
+}
+
+.view-img:hover{
+background:#2980b9;
+}
+
+.loading{
+text-align:center;
+padding:20px;
+color:#555;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.title{
+font-size:20px;
+}
+
+.back-btn{
+font-size:12px;
+padding:6px 10px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+<a href="javascript:history.back()" class="back-btn">⬅ Back</a>
+
+<h1 class="title">Customer Feedback</h1>
+
+<img src="/images/logo.png" class="logo">
+
+</div>
+
+<div class="container">
+
+<div class="table-box">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Sl No</th>
+<th>Name</th>
+<th>Email</th>
+<th>Product</th>
+<th>Rating</th>
+<th>Feedback</th>
+</tr>
+
+</thead>
+
+<tbody id="feedbackTable">
+
+<tr>
+<td colspan="7" class="loading">Loading feedback...</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+// CHECK LOGIN ROLE
+
+fetch("/get-user")
+.then(res=>res.json())
+.then(data=>{
+
+if(!data.success){
+location.href="/auth/login.html";
+return;
+}
+
+let role=data.user.role;
+
+if(role!=="admin" && role!=="staff"){
+alert("Access denied");
+location.href="/auth/login.html";
+}
+
+});
+
+fetch("https://docs.google.com/spreadsheets/d/1qGgxzgK7PRAKLLw2OKNrDcKj1DR2wJ1h2q4ZGjPcVno/export?format=csv&gid=41902427")
+
+.then(res => res.text())
+
+.then(data => {
+
+let rows = data.split("\n");
+let html = "";
+
+for(let i=1;i<rows.length;i++){
+
+let cols = rows[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+
+if(cols.length < 6) continue;
+
+let name = cols[2];
+let email = cols[1];
+let product = cols[4];
+let rating = cols[5];
+let feedback = cols[6];
+
+html += `
+<tr>
+<td>${i}</td>
+<td>${name}</td>
+<td>${email}</td>
+<td>${product}</td>
+<td>${rating} ⭐</td>
+<td>${feedback}</td>
+</tr>
+`;
+
+}
+
+document.getElementById("feedbackTable").innerHTML = html;
+
+});
+
+fetch("https://docs.google.com/spreadsheets/d/1qGgxzgK7PRAKLLw2OKNrDcKj1DR2wJ1h2q4ZGjPcVno/export?format=csv&gid=41902427")
+.then(res => res.text())
+.then(data => {
+console.log(data)
+})
+
+</script>
+
+</body>
+
+</html>

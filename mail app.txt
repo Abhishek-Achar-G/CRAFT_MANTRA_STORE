@@ -1,0 +1,5 @@
+app name : Mail 
+pass : fyqo uldb iido npbj
+
+link to redirect :
+https://accounts.google.com/v3/signin/challenge/pk/presend?TL=AHU8sQsJ9JmJ5eRquA3lnQIPKYxYbcFLRORG2NdRnoe3DUIEx9F3qgxVp3ZbH0ck&authuser=0&cid=2&continue=https%3A%2F%2Fmyaccount.google.com%2Fapppasswords&dsh=S-987621232%3A1772442605458303&flowName=GlifWebSignIn&followup=https%3A%2F%2Fmyaccount.google.com%2Fapppasswords&ifkv=ASfE1-p5jBVG_RYqniMNtpEtAnezE7i5dKh-wlZ9wmG7zckLC8P3Sog2QvNVJPG4m0B0psOS3q8owg&rart=ANgoxcer7Kp-Pvqyq95_IHazNR1aIQ1o9VAaok7aRKAdq4kr1R3KP7dkYLwgcZArN9xNRmXzqqD2eIcEVjDxYmlNnORuyW867NV8Y8tS9YHzwd4lOvz9JRs&rpbg=1&service=accountsettings

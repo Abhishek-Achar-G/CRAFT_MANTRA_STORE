@@ -1,0 +1,4 @@
+Google Sheet id : 1qGgxzgK7PRAKLLw2OKNrDcKj1DR2wJ1h2q4ZGjPcVno
+GID : 41902427
+
+CSV link : ("https://docs.google.com/spreadsheets/d/1qGgxzgK7PRAKLLw2OKNrDcKj1DR2wJ1h2q4ZGjPcVno/export?format=csv&gid=41902427")

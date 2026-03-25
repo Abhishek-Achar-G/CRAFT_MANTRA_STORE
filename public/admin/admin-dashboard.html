@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Dashboard - Craft Mantra</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#f4f6f9;
+}
+
+/* HEADER */
+
+.header{
+background:white;
+padding:15px;
+text-align:center;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+position:sticky;
+top:0;
+z-index:1000;
+}
+
+.header img{
+height:50px;
+}
+
+.header h2{
+color:#2e7d32;
+}
+
+/* LAYOUT */
+
+.container{
+display:flex;
+min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:230px;
+background:#2c3e50;
+color:white;
+}
+
+.sidebar a{
+display:block;
+padding:14px 20px;
+text-decoration:none;
+color:white;
+border-bottom:1px solid #34495e;
+cursor:pointer;
+}
+
+.sidebar a:hover{
+background:#34495e;
+}
+
+.logout{
+background:#e74c3c;
+}
+
+/* CONTENT */
+
+.content{
+flex:1;
+padding:30px;
+}
+
+/* DASHBOARD CARDS */
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+gap:20px;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+.card button{
+margin-top:10px;
+padding:10px;
+width:100%;
+border:none;
+border-radius:6px;
+background:#1976d2;
+color:white;
+cursor:pointer;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.container{
+flex-direction:column;
+}
+
+.sidebar{
+width:100%;
+display:flex;
+overflow:auto;
+}
+
+.sidebar a{
+flex:1;
+text-align:center;
+font-size:13px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+
+<img src="/images/logo.png">
+<h2>Craft Mantra Admin Panel</h2>
+
+</div>
+
+<div class="container">
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+<a href="/components/add-product.html">Add Product</a>
+
+<a href="/components/manage-products.html">Manage Products</a>
+
+<a href="/components/admin-enquiry.html ">Manage Enquiries</a>
+
+<a href="/components/add-event.html">Add Event</a>
+
+<a href="/components/manage-events.html ">Manage Events</a>
+
+<a href="/components/add-staff.html">Add Staff</a>
+
+<a href="/components/manage-staff.html">Manage Staff</a>
+
+<a href="/components/view--feedback.html">View Feedback</a>
+
+<a href="/auth/login.html" class="logout">Logout</a>
+
+</div>
+
+
+<!-- CONTENT -->
+
+<div class="content" id="content">
+
+<h2>Welcome Admin 👋</h2>
+
+<div class="cards">
+
+<div class="card">
+<h3>Add Product</h3>
+<button onclick="location.href='/admin/add-product.html'">Open</button>
+</div>
+
+<div class="card">
+<h3>Manage Products</h3>
+<button onclick="location.href='/components/manage-products.html'">Open</button>
+</div>
+
+<div class="card">
+<h3>Manage Enquiries</h3>
+<button onclick="location.href='/components/admin-enquiry.html'">Open</button>
+</div>
+
+<div class="card">
+<h3>Add Event</h3>
+<button onclick="location.href='/components/add-event.html'">Open</button>
+</div>
+
+<div class="card">
+<h3>Manage Events</h3>
+<button onclick="location.href='/components/manage-events.html'">Open</button>
+</div>
+
+<div class="card">
+<h3>Add Staff</h3>
+<button onclick="location.href='/components/add-staff.html'">Open</button>
+</div>
+
+<div class="card">
+<h3>Manage Staff</h3>
+<button onclick="location.href='/components/manage-staff.html'">Open</button>
+</div>
+
+<div class="card">
+<h3>View Feedback</h3>
+<button onclick="location.href='/components/view-feedback.html'">Open</button>
+</div>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+function openPage(page){
+
+fetch("/components/"+page+".html")
+.then(res=>res.text())
+.then(data=>{
+
+document.getElementById("content").innerHTML=data;
+
+});
+
+}
+
+</script>
+
+</body>
+</html>

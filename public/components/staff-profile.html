@@ -1,0 +1,115 @@
+<div class="profile-box">
+
+<h2>My Profile</h2>
+
+<div class="profile-card">
+
+<img id="profileDP" src="/images/user.png" class="dp">
+
+<input type="file" id="dpUpload" style="display:none">
+
+<button class="update-btn" onclick="document.getElementById('dpUpload').click()">
+Update DP
+</button>
+
+<div class="info">
+
+<p><b>User ID :</b> <span id="userCode"></span></p>
+
+<p><b>Name :</b> <span id="name"></span></p>
+
+<p><b>Email :</b> <span id="email"></span></p>
+
+</div>
+
+</div>
+
+</div>
+
+
+<style>
+
+.profile-box{
+max-width:450px;
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.profile-card{
+text-align:center;
+}
+
+.dp{
+width:120px;
+height:120px;
+border-radius:50%;
+object-fit:cover;
+margin-bottom:10px;
+}
+
+.update-btn{
+background:#3498db;
+color:white;
+border:none;
+padding:8px 15px;
+border-radius:6px;
+cursor:pointer;
+margin-bottom:15px;
+}
+
+.update-btn:hover{
+background:#2980b9;
+}
+
+.info p{
+margin:6px 0;
+font-size:15px;
+}
+
+</style>
+
+
+<script>
+
+fetch("/get-user")
+.then(res=>res.json())
+.then(data=>{
+
+document.getElementById("userCode").innerText=data.user.user_code;
+document.getElementById("name").innerText=data.user.name;
+document.getElementById("email").innerText=data.user.email;
+
+if(data.user.dp){
+document.getElementById("profileDP").src="/uploads/users/"+data.user.dp;
+document.getElementById("topDP").src="/uploads/users/"+data.user.dp;
+}
+
+});
+
+
+document.getElementById("dpUpload").addEventListener("change",async function(){
+
+let formData=new FormData();
+formData.append("dp",this.files[0]);
+
+let res=await fetch("/upload-dp",{
+method:"POST",
+body:formData
+});
+
+let data=await res.json();
+
+if(data.success){
+
+document.getElementById("profileDP").src="/uploads/users/"+data.filename;
+document.getElementById("topDP").src="/uploads/users/"+data.filename;
+
+alert("DP Updated");
+
+}
+
+});
+
+</script>
