@@ -40,7 +40,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded files statically
 
-app.use("/uploads", express.static("public/uploads"));
+//  app.use("/uploads", express.static("public/uploads"));
 
 /* ================================
    STATIC PUBLIC FOLDER
